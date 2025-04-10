@@ -2,7 +2,14 @@
 
 pipeline {
 
-  agent any
+  agent {
+    docker {
+        image 'hanahassan/ensf400-project:latest'  // or specify a specific tag like 'v1.0'
+        label 'docker'                             // optional: if you have a label for Docker-capable nodes
+        args '-v /var/run/docker.sock:/var/run/docker.sock' // optional: if your container needs Docker-in-Docker
+    }
+  }
+
 
    environment {
         // This is set so that the Python API tests will recognize it
@@ -16,6 +23,7 @@ pipeline {
     // place that happens.
     stage('Build') {
       steps {
+        sh 'chmod +x ./gradlew'
         sh './gradlew clean assemble'
       }
     }
