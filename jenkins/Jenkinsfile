@@ -4,7 +4,7 @@ pipeline {
 
   agent {
     docker {
-        image 'hanahassan/ensf400-project:latest'  // or specify a specific tag like 'v1.0'
+        image 'openjdk:17-jdk-slim'  // or specify a specific tag like 'v1.0'
         label 'docker'                             // optional: if you have a label for Docker-capable nodes
         args '-v /var/run/docker.sock:/var/run/docker.sock' // optional: if your container needs Docker-in-Docker
     }
