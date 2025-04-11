@@ -1,17 +1,29 @@
-# Use Gradle 7.6.1 with JDK 11
-FROM gradle:7.6.1-jdk11
+ FROM jenkins/jenkins:alpine
+# switch to root user
+USER root
 
-# Set working directory
-WORKDIR /app
+# install docker on top of the base image
+RUN apk add --update docker openrc
 
-# Copy source files
-COPY . .
+# Install Gradle dependencies
+RUN apk add --no-cache \
+    openjdk11 \
+    bash \
+    docker \
+    curl \
+    unzip
 
-# Build the application
-RUN gradle build --no-daemon
+# Set Gradle version
+ENV GRADLE_VERSION=7.6
+ENV GRADLE_HOME=/opt/gradle
+# Download and install Gradle
+RUN mkdir -p ${GRADLE_HOME} && \
+    curl -fsSL https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -o /tmp/gradle.zip && \
+    unzip /tmp/gradle.zip -d /opt/gradle && \
+    rm /tmp/gradle.zip
 
-# Expose application port
-EXPOSE 8080
+# Add Gradle to PATH
+ENV PATH="${GRADLE_HOME}/gradle-${GRADLE_VERSION}/bin:${PATH}"
 
-# Start the application
-CMD ["gradle", "apprun"]
+# Verify installation
+RUN gradle -v 
